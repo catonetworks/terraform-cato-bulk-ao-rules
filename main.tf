@@ -11,7 +11,7 @@
 # sectionless (rules at the policy root, section_name "") and sectioned.
 #
 # Publishing: cato_always_on_rule / cato_always_on_section save to the DRAFT
-# policy only; cato_bulk_ao_move_rule below is the stack's single publisher.
+# policy only; cato_always_on_rule_bulk below is the stack's single publisher.
 
 locals {
   ao_json = jsondecode(file("${var.ao_rules_json_file_path}"))
@@ -90,6 +90,18 @@ locals {
   }
 }
 
+# Safety guard: evaluated unconditionally (unlike a precondition on the rule
+# resource, which never runs when for_each has 0 instances) so a truncated or
+# wrong-tenant export with 0 rules fails plan instead of destroying the policy.
+resource "terraform_data" "guard_empty_policy" {
+  lifecycle {
+    precondition {
+      condition     = var.allow_empty_policy || length(local.rules_data_raw) > 0
+      error_message = "Policy JSON contains 0 rules. If intentional (greenfield/teardown), set allow_empty_policy = true. A truncated or wrong-tenant export would otherwise destroy the entire live policy."
+    }
+  }
+}
+
 resource "cato_always_on_section" "sections" {
   for_each = local.sections_data
   at = {
@@ -115,7 +127,7 @@ resource "cato_always_on_rule" "rules" {
 }
 
 # Ordering + the Always-On stack's ONLY publish.
-resource "cato_bulk_ao_move_rule" "all_ao_rules" {
+resource "cato_always_on_rule_bulk" "all_ao_rules" {
   depends_on = [cato_always_on_section.sections, cato_always_on_rule.rules]
 
   section_data = local.move_section_data

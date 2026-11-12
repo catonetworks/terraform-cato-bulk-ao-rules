@@ -19,6 +19,6 @@ output "rule_ids" {
 # Ordering rows the move resource cannot address (section_name "" - rules at
 # the policy root). Their order is creation order. Informational only.
 output "unordered_rules" {
-  description = "rules_in_sections rows excluded from cato_bulk_ao_move_rule (no managed section to order within)."
+  description = "rules_in_sections rows excluded from cato_always_on_rule_bulk (no managed section to order within)."
   value       = local.unordered_rules_data
 }
