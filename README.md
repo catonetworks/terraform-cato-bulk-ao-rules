@@ -1,5 +1,12 @@
 # Terraform Cato Bulk Always-On Rules Module
 
+> [!IMPORTANT]
+> **Early access (beta).** This module targets the Cato Terraform provider
+> `2.0.0-prerelease.1`, an **early-access / beta** release. A general-availability
+> (GA) release is planned shortly, following the current evaluation period.
+> Until GA ships, pin the exact prerelease version.
+
+
 Bulk-manages the Cato **ZTNA Always-On (ztnaAlwaysOn)** policy from a single
 JSON export: sections and rules (flat policy — no sub-policies exist for this
 type), with ordering and publishing via `cato_always_on_rule_bulk`.
@@ -71,6 +78,7 @@ is creation order.
 ### Parameters
 
 - `ao_rules_json_file_path`: Path to the ZTNA Always-On JSON export produced by `catocli export ao_rules` (`data.policy.ztnaAlwaysOn.policy` root)
+- `policy_enabled`: (Optional, default `null`) Account-level policy toggle. `null` leaves it unmanaged (resource not created); `true`/`false` manages it via `cato_always_on_policy`.
 - `allow_empty_policy`: (Optional, default `false`) Safety guard — fail planning when the policy JSON contains 0 rules unless explicitly allowed
 
 ## Working with Existing Rules (Brownfield Deployments)
@@ -302,13 +310,13 @@ These example outputs demonstrate various practical applications:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
-| <a name="requirement_cato"></a> [cato](#requirement\_cato) | >= 1.3.1 |
+| <a name="requirement_cato"></a> [cato](#requirement\_cato) | >= 2.0.0-prerelease.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_cato"></a> [cato](#provider\_cato) | >= 1.3.1 |
+| <a name="provider_cato"></a> [cato](#provider\_cato) | >= 2.0.0-prerelease.1 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Modules
@@ -329,6 +337,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_allow_empty_policy"></a> [allow\_empty\_policy](#input\_allow\_empty\_policy) | Safety guard: fail planning when the policy JSON contains 0 rules unless explicitly allowed. Protects against a truncated or wrong-tenant export destroying the live policy. Set true only for intentional greenfield/teardown. | `bool` | `false` | no |
+| <a name="input_policy_enabled"></a> [policy\_enabled](#input\_policy\_enabled) | Manage the account-level ZTNA Always-On policy toggle. null leaves the toggle unmanaged; true/false manages it via cato\_always\_on\_policy. | `bool` | `null` | no |
 | <a name="input_ao_rules_json_file_path"></a> [ao\_rules\_json\_file\_path](#input\_ao\_rules\_json\_file\_path) | Path to the ZTNA Always-On JSON export produced by `catocli export ao_rules` (data.policy.ztnaAlwaysOn.policy root). | `string` | n/a | yes |
 
 ## Outputs

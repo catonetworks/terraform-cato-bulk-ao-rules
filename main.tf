@@ -102,6 +102,13 @@ resource "terraform_data" "guard_empty_policy" {
   }
 }
 
+# Optional account-level policy toggle. null leaves the toggle unmanaged (count 0);
+# true/false manages the account-wide ZTNA Always-On enable/disable state.
+resource "cato_always_on_policy" "policy" {
+  count   = var.policy_enabled == null ? 0 : 1
+  enabled = var.policy_enabled
+}
+
 resource "cato_always_on_section" "sections" {
   for_each = local.sections_data
   at = {
@@ -124,6 +131,10 @@ resource "cato_always_on_rule" "rules" {
   }
 
   rule = local.rule_bodies[each.key]
+
+  lifecycle {
+    ignore_changes = [at] # create-only positioning; ordering owned by the move resource
+  }
 }
 
 # Ordering + the Always-On stack's ONLY publish.

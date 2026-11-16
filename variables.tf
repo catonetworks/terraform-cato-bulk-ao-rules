@@ -3,6 +3,12 @@ variable "ao_rules_json_file_path" {
   type        = string
 }
 
+variable "policy_enabled" {
+  description = "Manage the account-level ZTNA Always-On policy toggle. null leaves the toggle unmanaged; true/false manages it via cato_always_on_policy."
+  type        = bool
+  default     = null
+}
+
 variable "allow_empty_policy" {
   type        = bool
   default     = false
